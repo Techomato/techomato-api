@@ -67,13 +67,14 @@ class UserServices:
             users = None
             keyword = request_data.keyword.strip()
             if validate_email_format(keyword):
-                users = User.objects.filter(email=keyword)[:10]
+                users = User.objects.filter(email=keyword, is_deleted=False)[:10]
             else:
                 keywords = keyword.split(" ")
                 query = Q()
                 for keyword in keywords:
                     query |= Q(name__icontains=keyword)
 
+                query &= Q(is_deleted=False)
                 users = User.objects.filter(query)[:10]
 
             if users and users.exists():
@@ -133,7 +134,7 @@ class UserServices:
 
     @staticmethod
     def generate_reset_password_url(email: str) -> str:
-        user = User.objects.get(email=email)
+        user = User.objects.get(email=email, is_deleted=False)
         token = (
             TokenGenerator()
             .get_tokens_for_user(ExportUser(**user.model_to_dict()))
@@ -146,7 +147,7 @@ class UserServices:
 
     @staticmethod
     def change_password(uid: str, request_data: ChangePasswordRequestType):
-        user = User.objects.get(id=uid)
+        user = User.objects.get(id=uid, is_deleted=False)
         if request_data.password1 and request_data.password2:
             if validate_password_for_password_change(
                 request_data.password1, request_data.password2
@@ -164,7 +165,7 @@ class UserServices:
     def update_user_profile(
         uid: str, request_data: UpdateUserProfileRequestType
     ) -> ExportUser:
-        user = User.objects.get(id=uid)
+        user = User.objects.get(id=uid, is_deleted=False)
         if (
             request_data.image
             and isinstance(request_data.image, str)
@@ -208,14 +209,14 @@ class UserServices:
 
     @staticmethod
     def get_user_details(uid: str) -> ExportUser:
-        user = User.objects.get(id=uid)
+        user = User.objects.get(id=uid, is_deleted=False)
         user_details = ExportUser(with_id=True, **user.model_to_dict())
         return user_details
 
     @staticmethod
     def get_user_details_by_id(requested_user_id: str, uid: str) -> ExportUser:
         try:
-            requested_user = User.objects.get(id=requested_user_id)
+            requested_user = User.objects.get(id=requested_user_id, is_deleted=False)
             requested_user = ExportUser(**requested_user.model_to_dict())
             return requested_user
         except ObjectDoesNotExist:
@@ -242,7 +243,7 @@ class UserServices:
         otp = request_data.otp
         if email and validate_user_email(email=email).is_validated:
             if otp and len(otp) == 6:
-                user = User.objects.get(email=email)
+                user = User.objects.get(email=email, is_deleted=False)
                 if not user.is_active:
                     response = OTPServices().verify_otp(user, otp)
                     if response:
