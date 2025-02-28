@@ -10,6 +10,7 @@ class ExportUser(BaseModel):
     id: Optional[UUID]
     email: str
     name: str
+    username: Optional[str]
     account_type: Optional[str]
     dob: Optional[datetime.datetime]
     phone: Optional[str]
