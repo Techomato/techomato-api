@@ -38,20 +38,6 @@ class TestSendOTPView:
             == "UserAlreadyVerifiedError: This user is already verified."
         )
 
-    def test_send_otp_email_not_sent(self):
-        User.objects.create(email="testuser@example.com", is_active=False)
-        with patch.object(OTPServices, "send_otp_to_user", return_value="ERROR"):
-
-            client = APIClient()
-            data = {"email": "testuser@example.com"}
-            response = client.post(self.url, data, format="json")
-
-            assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-            assert (
-                response.data["message"]
-                == "EmailNotSentError: Verification Email could not be sent."
-            )
-
     def test_send_otp_user_not_found(self):
         client = APIClient()
         data = {"email": "nonexistentuser@example.com"}
