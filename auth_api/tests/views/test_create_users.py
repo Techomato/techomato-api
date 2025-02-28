@@ -13,6 +13,7 @@ class TestCreateUsersView:
         client = APIClient()
         data = {
             "email": "testuser@example.com",
+            "username": "testuser",
             "password": "TestPassword123",
             "name": "Test User",
         }

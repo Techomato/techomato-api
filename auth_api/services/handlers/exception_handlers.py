@@ -16,6 +16,7 @@ from auth_api.auth_exceptions.user_exceptions import (
     UserAuthenticationFailedError,
     UserNotAuthenticatedError,
     PasswordNotMatchError,
+    UserNotPermittedError,
 )
 
 
@@ -65,6 +66,10 @@ class ExceptionHandler:
             PasswordNotMatchError: {
                 "message": "PasswordNotMatchError",
                 "status": status.HTTP_400_BAD_REQUEST,
+            },
+            UserNotPermittedError: {
+                "message": "UserNotPermittedError",
+                "status": status.HTTP_403_FORBIDDEN,
             },
             ValueError: {
                 "message": "ValueError",
