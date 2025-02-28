@@ -3,6 +3,7 @@ from django.urls import path
 from auth_api.views.all_users import AllUsersView
 from auth_api.views.create_user import CreateUsersView
 from auth_api.views.fetch_user import FetchUserView
+from auth_api.views.logout import LogoutView
 from auth_api.views.otp_view import SendOTPView
 from auth_api.views.password_reset import PasswordResetView
 from auth_api.views.refresh_token import RefreshTokenView
@@ -17,6 +18,7 @@ from auth_api.views.validate_otp_view import ValidateOTPView
 urlpatterns = [
     path("create-users", CreateUsersView.as_view(), name="Create-Users"),
     path("sign-in", SignInView.as_view(), name="user-sign-in"),
+    path("logout", LogoutView.as_view(), name="user-logout"),
     path("update-profile", UpdateProfileView.as_view(), name="Update-User-profile"),
     path("user-details", UserDetailView.as_view(), name="user-details"),
     path("all-users", AllUsersView.as_view(), name="All-Users"),

@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from dotenv import load_dotenv
 from psycopg2 import DatabaseError
+from rest_framework_simplejwt.tokens import RefreshToken
 
 from auth_api.auth_exceptions.user_exceptions import (
     EmailNotSentError,
@@ -12,6 +13,7 @@ from auth_api.auth_exceptions.user_exceptions import (
     OTPNotVerifiedError,
     UserAlreadyVerifiedError,
     PasswordNotMatchError,
+    UserNotAuthenticatedError,
 )
 from auth_api.export_types.request_data_types.change_password import (
     ChangePasswordRequestType,
@@ -43,6 +45,18 @@ from auth_api.services.token_services.token_generator import TokenGenerator
 
 
 class UserServices:
+
+    @staticmethod
+    def logout_user(request) -> dict:
+        refresh_token = request.headers.get("Authorization", "").split(" ")[1]
+        if refresh_token:
+            token = RefreshToken(refresh_token)
+            token.payload["user_id"] = "1"
+            token.blacklist()
+        else:
+            raise UserNotAuthenticatedError()
+        return {"message": "User logged out successfully."}
+
     @staticmethod
     def get_all_users_service() -> Optional[ExportUserList]:
         try:
