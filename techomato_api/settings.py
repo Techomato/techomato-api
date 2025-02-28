@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "auth_api",
-    "rest_framework_simplejwt.token_blacklist",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -124,6 +123,7 @@ SIMPLE_JWT = {
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
     "TOKEN_BLACKLIST_ENABLED": True,
+    "ROTATE_REFRESH_TOKENS": False,
 }
 
 # SMTP Settings
