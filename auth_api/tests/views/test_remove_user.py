@@ -4,7 +4,6 @@ from rest_framework import status
 from rest_framework_simplejwt.tokens import AccessToken
 
 from auth_api.models.user_models.user import User
-from auth_api.services.helpers import decode_jwt_token
 
 
 @pytest.mark.usefixtures("create_test_user")
