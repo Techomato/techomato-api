@@ -7,8 +7,8 @@ from dotenv import load_dotenv
 from psycopg2 import DatabaseError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from auth_api import executor
 from auth_api.auth_exceptions.user_exceptions import (
-    EmailNotSentError,
     UserNotFoundError,
     OTPNotVerifiedError,
     UserAlreadyVerifiedError,
@@ -114,14 +114,11 @@ class UserServices:
     def create_new_user_service(request_data: CreateUserRequestType) -> dict:
         user: User = UserSerializer().create(data=request_data.model_dump())
         if user:
-            response = OTPServices().send_otp_to_user(user.email)
-            if response == "OK":
-                return {
-                    "successMessage": DEFAULT_VERIFICATION_MESSAGE,
-                    "errorMessage": None,
-                }
-            else:
-                raise EmailNotSentError()
+            executor.submit(OTPServices().send_otp_to_user, user.email)
+            return {
+                "successMessage": DEFAULT_VERIFICATION_MESSAGE,
+                "errorMessage": None,
+            }
 
     @staticmethod
     def sign_in_user(request_data: SignInRequestType) -> dict:
@@ -131,18 +128,13 @@ class UserServices:
     def reset_password(self, email: str) -> dict:
         if validate_user_email(email=email).is_validated:
             reset_url = self.generate_reset_password_url(email=email)
-            if (
-                EmailServices.send_password_reset_email_by_user_email(
-                    user_email=email, reset_url=reset_url
-                )
-                == "OK"
-            ):
-                return {
-                    "successMessage": "Password reset email sent successfully.",
-                    "errorMessage": None,
-                }
-            else:
-                raise EmailNotSentError()
+            executor.submit(
+                EmailServices.send_password_reset_email_by_user_email, email, reset_url
+            )
+            return {
+                "successMessage": "Password reset email sent successfully.",
+                "errorMessage": None,
+            }
         else:
             raise UserNotFoundError()
 
