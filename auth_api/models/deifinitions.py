@@ -6,3 +6,8 @@ class AccountType(models.TextChoices):
     SELLER = "seller", "Seller"
     ADMIN = "admin", "Admin"
     STAFF = "staff", "Staff"
+
+
+class CourseType(models.TextChoices):
+    FREE = "free", "free"
+    PAID = "paid", "paid"
