@@ -1,12 +1,13 @@
 from typing import Optional
-
 from _decimal import Decimal
 from rest_framework import serializers
 
 from auth_api.models.user_models.user import User
+from auth_api.services.helpers import is_valid_uuid
 from subjects.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )
+from subjects.models.category import Category
 from subjects.models.subject import Subject
 
 
@@ -47,6 +48,13 @@ class SubjectSerializer(serializers.ModelSerializer):
         if isinstance(courseCategory, str) and courseCategory == "":
             raise ValueError("Course category cannot be empty.")
 
+        if (
+            courseCategory
+            and is_valid_uuid(courseCategory)
+            and not Category.objects.filter(id=courseCategory).exists()
+        ):
+            raise ValueError("Course category does not exist.")
+
         if isinstance(courseShortDescription, str) and courseShortDescription == "":
             raise ValueError("Course short description cannot be empty.")
 
@@ -71,9 +79,10 @@ class SubjectSerializer(serializers.ModelSerializer):
 
             author: User = User.objects.get(id=uid)
 
+            category: Category = Category.objects.get(id=request.courseCategory)
+
             courseName = request.courseName
             courseType = request.courseType if request.courseType else "free"
-            courseCategory = request.courseCategory
             courseShortDescription = request.courseShortDescription
             courseFullDescription = (
                 request.courseFullDescription if request.courseFullDescription else ""
@@ -87,7 +96,7 @@ class SubjectSerializer(serializers.ModelSerializer):
                 image=image,
                 courseName=courseName,
                 courseType=courseType,
-                courseCategory=courseCategory,
+                courseCategory=category,
                 courseShortDescription=courseShortDescription,
                 courseFullDescription=courseFullDescription,
                 price=course_price,

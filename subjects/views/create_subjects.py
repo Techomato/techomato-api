@@ -24,9 +24,7 @@ class CreateSubjectView(APIView):
                 )
                 return Response(
                     data={
-                        "message": (
-                            result.get("message")
-                        ),
+                        "message": (result.get("message")),
                         "data": result.get("data"),
                     },
                     status=status.HTTP_201_CREATED,
