@@ -69,12 +69,15 @@ class UserSerializer(serializers.ModelSerializer):
             account_type = data.get("account_type")
             if account_type and not isinstance(account_type, str):
                 account_type = account_type.value
+            is_admin: bool = True if account_type.lower() == "admin" else False
+
             user = User(
                 username=username,
                 email=email,
                 name=name,
                 account_type=account_type,
                 password=EncryptionServices().encrypt(password),
+                is_admin=is_admin
             )
             user.save()
             return user
