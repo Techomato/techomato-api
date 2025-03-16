@@ -77,7 +77,7 @@ class UserSerializer(serializers.ModelSerializer):
                 name=name,
                 account_type=account_type,
                 password=EncryptionServices().encrypt(password),
-                is_admin=is_admin
+                is_admin=is_admin,
             )
             user.save()
             return user
