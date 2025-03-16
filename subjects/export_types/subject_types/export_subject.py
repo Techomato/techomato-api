@@ -41,4 +41,4 @@ class ExportSubject(BaseModel):
 
 
 class ExportSubjectList(BaseModel):
-    group_list: typing.List[ExportSubject]
+    subject_list: typing.List[ExportSubject]
