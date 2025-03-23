@@ -3,6 +3,7 @@ from typing import Optional
 from psycopg2 import DatabaseError
 
 from auth_api.models.user_models.user import User
+from subjects.exceptions.subject_exceptions import NotAllowedEditSubjectError, SubjectNotFoundError
 from subjects.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )
@@ -50,13 +51,13 @@ class SubjectServices:
     def edit_subject(uid: str, request_data: EditSubjectRequestType) -> ExportSubject:
         user = User.objects.get(id=uid, is_deleted=False)
         if not user.is_admin:
-            raise ValueError("You are not an admin to edit this subject.")
+            raise NotAllowedEditSubjectError()
 
         subject = Subject.objects.get(id=request_data.id, is_deleted=False)
         if not subject:
-            raise ValueError("Subject not found.")
+            raise SubjectNotFoundError()
         if str(subject.author.id) != str(uid):
-            raise ValueError("You are not allowed to edit this subject.")
+            raise NotAllowedEditSubjectError()
 
         if (
             request_data.image
