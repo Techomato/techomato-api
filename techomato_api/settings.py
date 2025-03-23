@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "auth_api",
     "subjects",
+    "generic_test",
 ]
 
 CORS_ALLOWED_ORIGINS = [

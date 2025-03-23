@@ -11,3 +11,8 @@ class AccountType(models.TextChoices):
 class CourseType(models.TextChoices):
     FREE = "free", "free"
     PAID = "paid", "paid"
+
+
+class TestType(models.TextChoices):
+    DAILY_TEST = "daily_test", "DAILY_TEST"
+    COMPETITION = "competition", "COMPETITION"
