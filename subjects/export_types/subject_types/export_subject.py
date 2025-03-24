@@ -30,9 +30,18 @@ class ExportSubject(BaseModel):
     is_active: bool
     is_deleted: bool
 
-    def __init__(self, **kwargs):
+    def __init__(self, with_id: bool = True, **kwargs):
+        if not with_id:
+            kwargs["id"] = None
         if isinstance(kwargs["author"], User):
-            kwargs["author"] = ExportUser(**kwargs["author"].model_to_dict())
+            user_dict = kwargs["author"].model_to_dict()
+            kwargs["author"] = ExportUser(
+                id=user_dict.get("id"),
+                email=user_dict.get("email"),
+                name=user_dict.get("name"),
+                username=user_dict.get("username"),
+                image=user_dict.get("image"),
+            )
         if isinstance(kwargs["courseCategory"], Category):
             kwargs["courseCategory"] = ExportCategory(
                 **kwargs["courseCategory"].model_to_dict()
@@ -41,4 +50,4 @@ class ExportSubject(BaseModel):
 
 
 class ExportSubjectList(BaseModel):
-    group_list: typing.List[ExportSubject]
+    subject_list: typing.List[ExportSubject]

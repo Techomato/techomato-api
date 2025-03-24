@@ -10,17 +10,17 @@ class ExportUser(BaseModel):
     id: Optional[UUID]
     email: str
     name: str
-    username: Optional[str]
-    account_type: Optional[str]
-    dob: Optional[datetime.datetime]
-    phone: Optional[str]
-    image: Optional[str]
-    is_active: bool
-    is_deleted: bool
-    is_admin: bool
-    is_staff: bool
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    username: Optional[str] = None
+    account_type: Optional[str] = None
+    dob: Optional[datetime.datetime] = None
+    phone: Optional[str] = None
+    image: Optional[str] = None
+    is_active: Optional[bool] = None
+    is_deleted: Optional[bool] = None
+    is_admin: Optional[bool] = None
+    is_staff: Optional[bool] = None
+    created_at: Optional[datetime.datetime] = None
+    updated_at: Optional[datetime.datetime] = None
 
     def __init__(self, with_id: bool = True, **kwargs):
         if not with_id:
