@@ -171,3 +171,4 @@ cython_debug/
 .pypirc
 /auth_api/migrations/
 /subjects/migrations/
+/generic_test/migrations/
