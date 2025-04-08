@@ -6,3 +6,13 @@ class AccountType(models.TextChoices):
     SELLER = "seller", "Seller"
     ADMIN = "admin", "Admin"
     STAFF = "staff", "Staff"
+
+
+class CourseType(models.TextChoices):
+    FREE = "free", "free"
+    PAID = "paid", "paid"
+
+
+class TestType(models.TextChoices):
+    DAILY_TEST = "daily_test", "DAILY_TEST"
+    COMPETITION = "competition", "COMPETITION"

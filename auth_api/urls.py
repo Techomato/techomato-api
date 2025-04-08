@@ -17,6 +17,7 @@ from auth_api.views.validate_otp_view import ValidateOTPView
 urlpatterns = [
     path("create-users", CreateUsersView.as_view(), name="Create-Users"),
     path("sign-in", SignInView.as_view(), name="user-sign-in"),
+    # path("logout", LogoutView.as_view(), name="user-logout"),
     path("update-profile", UpdateProfileView.as_view(), name="Update-User-profile"),
     path("user-details", UserDetailView.as_view(), name="user-details"),
     path("all-users", AllUsersView.as_view(), name="All-Users"),

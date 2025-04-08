@@ -4,8 +4,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from auth_api import executor
 from auth_api.auth_exceptions.user_exceptions import (
-    EmailNotSentError,
     UserAlreadyVerifiedError,
     UserNotFoundError,
 )
@@ -26,17 +26,14 @@ class SendOTPView(APIView):
             if email and validate_user_email(email).is_validated:
                 user = User.objects.get(email=email)
                 if not user.is_active:
-                    response = OTPServices().send_otp_to_user(email)
-                    if response == "OK":
-                        return Response(
-                            data={
-                                "message": DEFAULT_VERIFICATION_MESSAGE,
-                            },
-                            status=status.HTTP_200_OK,
-                            content_type="application/json",
-                        )
-                    else:
-                        raise EmailNotSentError()
+                    executor.submit(OTPServices().send_otp_to_user, user.email)
+                    return Response(
+                        data={
+                            "message": DEFAULT_VERIFICATION_MESSAGE,
+                        },
+                        status=status.HTTP_200_OK,
+                        content_type="application/json",
+                    )
                 else:
                     raise UserAlreadyVerifiedError()
             else:

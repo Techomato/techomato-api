@@ -5,13 +5,15 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from dotenv import load_dotenv
 from psycopg2 import DatabaseError
+from rest_framework_simplejwt.tokens import RefreshToken
 
+from auth_api import executor
 from auth_api.auth_exceptions.user_exceptions import (
-    EmailNotSentError,
     UserNotFoundError,
     OTPNotVerifiedError,
     UserAlreadyVerifiedError,
     PasswordNotMatchError,
+    UserNotAuthenticatedError,
 )
 from auth_api.export_types.request_data_types.change_password import (
     ChangePasswordRequestType,
@@ -43,6 +45,18 @@ from auth_api.services.token_services.token_generator import TokenGenerator
 
 
 class UserServices:
+
+    @staticmethod
+    def logout_user(request) -> dict:
+        refresh_token = request.headers.get("Authorization", "").split(" ")[1]
+        if refresh_token:
+            token = RefreshToken(refresh_token)
+            token.payload["user_id"] = "1"
+            token.blacklist()
+        else:
+            raise UserNotAuthenticatedError()
+        return {"message": "User logged out successfully."}
+
     @staticmethod
     def get_all_users_service() -> Optional[ExportUserList]:
         try:
@@ -67,13 +81,14 @@ class UserServices:
             users = None
             keyword = request_data.keyword.strip()
             if validate_email_format(keyword):
-                users = User.objects.filter(email=keyword)[:10]
+                users = User.objects.filter(email=keyword, is_deleted=False)[:10]
             else:
                 keywords = keyword.split(" ")
                 query = Q()
                 for keyword in keywords:
                     query |= Q(name__icontains=keyword)
 
+                query &= Q(is_deleted=False)
                 users = User.objects.filter(query)[:10]
 
             if users and users.exists():
@@ -99,14 +114,11 @@ class UserServices:
     def create_new_user_service(request_data: CreateUserRequestType) -> dict:
         user: User = UserSerializer().create(data=request_data.model_dump())
         if user:
-            response = OTPServices().send_otp_to_user(user.email)
-            if response == "OK":
-                return {
-                    "successMessage": DEFAULT_VERIFICATION_MESSAGE,
-                    "errorMessage": None,
-                }
-            else:
-                raise EmailNotSentError()
+            executor.submit(OTPServices().send_otp_to_user, user.email)
+            return {
+                "successMessage": DEFAULT_VERIFICATION_MESSAGE,
+                "errorMessage": None,
+            }
 
     @staticmethod
     def sign_in_user(request_data: SignInRequestType) -> dict:
@@ -116,24 +128,19 @@ class UserServices:
     def reset_password(self, email: str) -> dict:
         if validate_user_email(email=email).is_validated:
             reset_url = self.generate_reset_password_url(email=email)
-            if (
-                EmailServices.send_password_reset_email_by_user_email(
-                    user_email=email, reset_url=reset_url
-                )
-                == "OK"
-            ):
-                return {
-                    "successMessage": "Password reset email sent successfully.",
-                    "errorMessage": None,
-                }
-            else:
-                raise EmailNotSentError()
+            executor.submit(
+                EmailServices.send_password_reset_email_by_user_email, email, reset_url
+            )
+            return {
+                "successMessage": "Password reset email sent successfully.",
+                "errorMessage": None,
+            }
         else:
             raise UserNotFoundError()
 
     @staticmethod
     def generate_reset_password_url(email: str) -> str:
-        user = User.objects.get(email=email)
+        user = User.objects.get(email=email, is_deleted=False)
         token = (
             TokenGenerator()
             .get_tokens_for_user(ExportUser(**user.model_to_dict()))
@@ -146,7 +153,7 @@ class UserServices:
 
     @staticmethod
     def change_password(uid: str, request_data: ChangePasswordRequestType):
-        user = User.objects.get(id=uid)
+        user = User.objects.get(id=uid, is_deleted=False)
         if request_data.password1 and request_data.password2:
             if validate_password_for_password_change(
                 request_data.password1, request_data.password2
@@ -164,7 +171,7 @@ class UserServices:
     def update_user_profile(
         uid: str, request_data: UpdateUserProfileRequestType
     ) -> ExportUser:
-        user = User.objects.get(id=uid)
+        user = User.objects.get(id=uid, is_deleted=False)
         if (
             request_data.image
             and isinstance(request_data.image, str)
@@ -208,14 +215,14 @@ class UserServices:
 
     @staticmethod
     def get_user_details(uid: str) -> ExportUser:
-        user = User.objects.get(id=uid)
+        user = User.objects.get(id=uid, is_deleted=False)
         user_details = ExportUser(with_id=True, **user.model_to_dict())
         return user_details
 
     @staticmethod
     def get_user_details_by_id(requested_user_id: str, uid: str) -> ExportUser:
         try:
-            requested_user = User.objects.get(id=requested_user_id)
+            requested_user = User.objects.get(id=requested_user_id, is_deleted=False)
             requested_user = ExportUser(**requested_user.model_to_dict())
             return requested_user
         except ObjectDoesNotExist:
@@ -242,7 +249,7 @@ class UserServices:
         otp = request_data.otp
         if email and validate_user_email(email=email).is_validated:
             if otp and len(otp) == 6:
-                user = User.objects.get(email=email)
+                user = User.objects.get(email=email, is_deleted=False)
                 if not user.is_active:
                     response = OTPServices().verify_otp(user, otp)
                     if response:

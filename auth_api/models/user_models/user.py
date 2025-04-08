@@ -31,7 +31,7 @@ class User(AbstractUser):
                         EncryptionServices().decrypt(user.password)
                         == request_data.password
                     ):
-                        if user.is_active:
+                        if user.is_active and not user.is_deleted:
                             token = TokenGenerator().get_tokens_for_user(user)
                             return {
                                 "token": token,

@@ -17,13 +17,11 @@ class UserSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
     def validate(self, data: Optional[dict] = None) -> Optional[bool]:
-        is_validated_email = False
-        is_validated_name = False
-        is_validated_password = False
-
         email = data.get("email")
         name = data.get("name")
         password = data.get("password")
+        username = data.get("username")
+        account_type = data.get("account_type")
 
         # Email Validation
         if email and email != "" and isinstance(email, str):
@@ -34,16 +32,18 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError(detail="Email should not be empty.")
 
-        # Name and Username Validation
+        # Name Validation
         if name and name != "" and isinstance(name, str):
             validation_result_name: ValidationResult = validate_name(name)
             is_validated_name = validation_result_name.is_validated
             if not is_validated_name:
                 raise serializers.ValidationError(detail=validation_result_name.error)
         else:
-            raise serializers.ValidationError(
-                detail="First Name and Last Name should not be empty."
-            )
+            raise serializers.ValidationError(detail="Name should not be empty.")
+
+        # Username Validation
+        if not username and username != "" and isinstance(username, str):
+            raise serializers.ValidationError(detail="Username should not be empty.")
 
         # Password Validation
         if password and password != "" and isinstance(password, str):
@@ -54,18 +54,30 @@ class UserSerializer(serializers.ModelSerializer):
         else:
             raise serializers.ValidationError(detail="Password should not be empty.")
 
-        if is_validated_email and is_validated_password and is_validated_name:
-            return True
+        # Account Type Validation
+        if not account_type or account_type == "":
+            data["account_type"] = "regular"
+
+        return True
 
     def create(self, data: dict) -> User:
-        email = data.get("email")
-        name = data.get("name")
-        password = data.get("password")
         if self.validate(data):
+            email = data.get("email")
+            name = data.get("name")
+            password = data.get("password")
+            username = data.get("username")
+            account_type = data.get("account_type")
+            if account_type and not isinstance(account_type, str):
+                account_type = account_type.value
+            is_admin: bool = True if account_type.lower() == "admin" else False
+
             user = User(
+                username=username,
                 email=email,
                 name=name,
+                account_type=account_type,
                 password=EncryptionServices().encrypt(password),
+                is_admin=is_admin,
             )
             user.save()
             return user

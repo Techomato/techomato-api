@@ -169,3 +169,6 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+/auth_api/migrations/
+/subjects/migrations/
+/generic_test/migrations/

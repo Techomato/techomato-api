@@ -25,6 +25,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "auth_api",
+    "subjects",
+    "generic_test",
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -115,10 +117,15 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(days=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
+    "BLACKLIST_AFTER_ROTATION": True,
+    "USER_ID_FIELD": "id",
+    "USER_ID_CLAIM": "user_id",
     "SIGNING_KEY": os.environ.get("JWT_ENCRYPTION_PASSWORD"),
     "ALGORITHM": "HS256",
     "AUTH_HEADER_TYPES": ("Bearer",),
     "AUTH_HEADER_NAME": "HTTP_AUTHORIZATION",
+    "TOKEN_BLACKLIST_ENABLED": True,
+    "ROTATE_REFRESH_TOKENS": False,
 }
 
 # SMTP Settings
