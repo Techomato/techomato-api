@@ -51,13 +51,13 @@ class SubjectServices:
     def edit_subject(uid: str, request_data: EditSubjectRequestType) -> ExportSubject:
         user = User.objects.get(id=uid, is_deleted=False)
         if not user.is_admin:
-            raise NotAllowedEditSubjectError()
+            raise PermissionDeniedError()
 
         subject = Subject.objects.get(id=request_data.id, is_deleted=False)
         if not subject:
             raise SubjectNotFoundError()
         if str(subject.author.id) != str(uid):
-            raise NotAllowedEditSubjectError()
+            raise PermissionDeniedError()
 
         if (
             request_data.image

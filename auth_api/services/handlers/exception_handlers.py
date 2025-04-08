@@ -76,8 +76,8 @@ class ExceptionHandler:
                 "message": "SubjectNotFoundError",
                 "status": status.HTTP_403_FORBIDDEN,
             },
-            NotAllowedEditSubjectError: {
-                "message": "NotAllowedEditSubjectError",
+            PermissionDeniedError: {
+                "message": "PermissionDeniedError",
                 "status": status.HTTP_403_FORBIDDEN,
             },
             ValueError: {
