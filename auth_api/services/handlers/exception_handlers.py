@@ -18,6 +18,7 @@ from auth_api.auth_exceptions.user_exceptions import (
     PasswordNotMatchError,
     UserNotPermittedError,
 )
+from subjects.exceptions.subject_exceptions import NotAllowedEditSubjectError, SubjectNotFoundError
 
 
 class ExceptionHandler:
@@ -69,6 +70,14 @@ class ExceptionHandler:
             },
             UserNotPermittedError: {
                 "message": "UserNotPermittedError",
+                "status": status.HTTP_403_FORBIDDEN,
+            },
+            SubjectNotFoundError: {
+                "message": "SubjectNotFoundError",
+                "status": status.HTTP_403_FORBIDDEN,
+            },
+            NotAllowedEditSubjectError: {
+                "message": "NotAllowedEditSubjectError",
                 "status": status.HTTP_403_FORBIDDEN,
             },
             ValueError: {
