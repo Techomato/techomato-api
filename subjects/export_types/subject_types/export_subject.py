@@ -35,13 +35,7 @@ class ExportSubject(BaseModel):
             kwargs["id"] = None
         if isinstance(kwargs["author"], User):
             user_dict = kwargs["author"].model_to_dict()
-            kwargs["author"] = ExportUser(
-                id=user_dict.get("id"),
-                email=user_dict.get("email"),
-                name=user_dict.get("name"),
-                username=user_dict.get("username"),
-                image=user_dict.get("image"),
-            )
+            kwargs["author"] = ExportUser(**user_dict)
         if isinstance(kwargs["courseCategory"], Category):
             kwargs["courseCategory"] = ExportCategory(
                 **kwargs["courseCategory"].model_to_dict()

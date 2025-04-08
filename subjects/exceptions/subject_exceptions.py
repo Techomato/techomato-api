@@ -12,6 +12,7 @@ class SubjectNotFoundError(AUTHBaseException):
             super().__init__(msg)
         logging.error(self.msg)
 
+
 class PermissionDeniedError(AUTHBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:

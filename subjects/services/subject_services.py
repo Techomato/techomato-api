@@ -3,7 +3,10 @@ from typing import Optional
 from psycopg2 import DatabaseError
 
 from auth_api.models.user_models.user import User
-from subjects.exceptions.subject_exceptions import PermissionDeniedError, SubjectNotFoundError
+from subjects.exceptions.subject_exceptions import (
+    PermissionDeniedError,
+    SubjectNotFoundError,
+)
 from subjects.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )
@@ -96,3 +99,16 @@ class SubjectServices:
         subject.updated_at = timezone.now()
         subject.save()
         return ExportSubject(**subject.model_to_dict())
+
+    @staticmethod
+    def get_subject_service(subject_id: str) -> Optional[ExportSubject]:
+        try:
+            subject = Subject.objects.get(
+                id=subject_id, is_deleted=False, is_active=True
+            )
+        except Exception:
+            raise SubjectNotFoundError()
+        if subject:
+            return ExportSubject(**subject.model_to_dict())
+        else:
+            return None
