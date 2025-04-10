@@ -3,7 +3,10 @@ from typing import Optional
 from psycopg2 import DatabaseError
 
 from auth_api.models.user_models.user import User
-from subjects.exceptions.subject_exceptions import NotAllowedEditSubjectError, SubjectNotFoundError
+from subjects.exceptions.subject_exceptions import (
+    NotAllowedEditSubjectError,
+    SubjectNotFoundError,
+)
 from subjects.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )

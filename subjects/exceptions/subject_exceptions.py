@@ -12,6 +12,7 @@ class SubjectNotFoundError(AUTHBaseException):
             super().__init__(msg)
         logging.error(self.msg)
 
+
 class NotAllowedEditSubjectError(AUTHBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
