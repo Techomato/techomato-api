@@ -4,8 +4,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from auth_api.services.handlers.exception_handlers import ExceptionHandler
-from subjects.export_types.subject_types.export_subject import ExportSubjectList
-from subjects.services.subject_services import SubjectServices
+from subject.export_types.subject_types.export_subject import ExportSubjectList
+from subject.services.subject_services import SubjectServices
 
 
 class AllSubjectsView(APIView):

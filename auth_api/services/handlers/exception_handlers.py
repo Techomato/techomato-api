@@ -18,7 +18,7 @@ from auth_api.auth_exceptions.user_exceptions import (
     PasswordNotMatchError,
     UserNotPermittedError,
 )
-from subjects.exceptions.subject_exceptions import (
+from subject.exceptions.subject_exceptions import (
     NotAllowedEditSubjectError,
     SubjectNotFoundError,
 )

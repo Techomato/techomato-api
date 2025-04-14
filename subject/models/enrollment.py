@@ -2,7 +2,7 @@ from auth_api.models.base_models.base_model import GenericBaseModel
 from django.db import models
 
 from auth_api.models.user_models.user import User
-from subjects.models.subject import Subject
+from subject.models.subject import Subject
 
 
 class Enrollment(GenericBaseModel):

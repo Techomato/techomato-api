@@ -8,9 +8,9 @@ from pydantic import BaseModel
 
 from auth_api.export_types.user_types.export_user import ExportUser
 from auth_api.models.user_models.user import User
-from subjects.export_types.subject_types.export_category import ExportCategory
-from subjects.export_types.subject_types.export_review import ExportReview
-from subjects.models.category import Category
+from subject.export_types.subject_types.export_category import ExportCategory
+from subject.export_types.subject_types.export_review import ExportReview
+from subject.models.category import Category
 
 
 class ExportSubject(BaseModel):
