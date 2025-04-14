@@ -12,10 +12,11 @@ class SubjectNotFoundError(AUTHBaseException):
             super().__init__(msg)
         logging.error(self.msg)
 
-class NotAllowedEditSubjectError(AUTHBaseException):
+
+class PermissionDeniedError(AUTHBaseException):
     def __init__(self, msg: Optional[str] = None):
         if not msg:
-            self.msg = "You are not allowed to edit this subject."
+            self.msg = "This user is not permitted to perform this action."
         else:
             super().__init__(msg)
         logging.error(self.msg)
