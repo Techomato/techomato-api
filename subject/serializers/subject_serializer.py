@@ -4,11 +4,11 @@ from rest_framework import serializers
 
 from auth_api.models.user_models.user import User
 from auth_api.services.helpers import is_valid_uuid
-from subjects.export_types.request_data_types.create_subject import (
+from subject.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )
-from subjects.models.category import Category
-from subjects.models.subject import Subject
+from subject.models.category import Category
+from subject.models.subject import Subject
 
 
 class SubjectSerializer(serializers.ModelSerializer):

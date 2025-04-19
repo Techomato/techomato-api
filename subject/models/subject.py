@@ -3,8 +3,8 @@ from django.db import models
 
 from auth_api.models.deifinitions import CourseType
 from auth_api.models.user_models.user import User
-from subjects.models.category import Category
-from subjects.models.review import Review
+from subject.models.category import Category
+from subject.models.review import Review
 
 
 class Subject(GenericBaseModel):
