@@ -7,22 +7,24 @@ from rest_framework_simplejwt.exceptions import TokenError
 
 from auth_api.services.handlers.exception_handlers import ExceptionHandler
 from auth_api.services.helpers import decode_jwt_token, validate_user_uid
-from subjects.services.subject_services import SubjectServices
+from subject.export_types.request_data_types.edit_subject import EditSubjectRequestType
+from subject.services.subject_services import SubjectServices
 
 
-class GetSubjectView(APIView):
+class EditSubjectView(APIView):
     renderer_classes = [JSONRenderer]
 
     def post(self, request):
         try:
             user_id = decode_jwt_token(request=request)
             if validate_user_uid(uid=user_id).is_validated:
-                subject = SubjectServices().get_subject_service(
-                    subject_id=request.data.get("subject_id"),
+                subject = SubjectServices().edit_subject(
+                    uid=user_id,
+                    request_data=EditSubjectRequestType(**request.data),
                 )
                 return Response(
                     data={
-                        "message": "Subject details fetched Successfully.",
+                        "message": "Subject details updated Successfully.",
                         "data": subject.model_dump(),
                     },
                     status=status.HTTP_200_OK,

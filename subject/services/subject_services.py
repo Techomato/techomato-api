@@ -3,20 +3,20 @@ from typing import Optional
 from psycopg2 import DatabaseError
 
 from auth_api.models.user_models.user import User
-from subjects.exceptions.subject_exceptions import (
+from subject.exceptions.subject_exceptions import (
     PermissionDeniedError,
     SubjectNotFoundError,
 )
-from subjects.export_types.request_data_types.create_subject import (
+from subject.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )
-from subjects.export_types.request_data_types.edit_subject import EditSubjectRequestType
-from subjects.export_types.subject_types.export_subject import (
+from subject.export_types.request_data_types.edit_subject import EditSubjectRequestType
+from subject.export_types.subject_types.export_subject import (
     ExportSubject,
     ExportSubjectList,
 )
-from subjects.models.subject import Subject
-from subjects.serializers.subject_serializer import SubjectSerializer
+from subject.models.subject import Subject
+from subject.serializers.subject_serializer import SubjectSerializer
 
 from django.utils import timezone
 
@@ -55,10 +55,13 @@ class SubjectServices:
         user = User.objects.get(id=uid, is_deleted=False)
         if not user.is_admin:
             raise PermissionDeniedError()
-
-        subject = Subject.objects.get(id=request_data.id, is_deleted=False)
-        if not subject:
+        try:
+            subject = Subject.objects.get(
+                id=request_data.id, is_deleted=False, is_active=True
+            )
+        except Exception:
             raise SubjectNotFoundError()
+
         if str(subject.author.id) != str(uid):
             raise PermissionDeniedError()
 

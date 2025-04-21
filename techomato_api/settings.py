@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "corsheaders",
     "auth_api",
-    "subjects",
+    "subject",
     "generic_test",
 ]
 

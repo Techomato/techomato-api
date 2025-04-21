@@ -6,7 +6,7 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from auth_api.export_types.user_types.export_user import ExportUser
-from subjects.models.review import Review
+from subject.models.review import Review
 
 
 class ExportReview(BaseModel):
