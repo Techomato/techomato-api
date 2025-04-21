@@ -7,7 +7,7 @@ from rest_framework_simplejwt.exceptions import TokenError
 
 from auth_api.services.handlers.exception_handlers import ExceptionHandler
 from auth_api.services.helpers import decode_jwt_token, validate_user_uid
-from subjects.services.subject_services import SubjectServices
+from subject.services.subject_services import SubjectServices
 
 
 class GetSubjectView(APIView):

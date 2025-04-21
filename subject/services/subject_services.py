@@ -3,11 +3,11 @@ from typing import Optional
 from psycopg2 import DatabaseError
 
 from auth_api.models.user_models.user import User
-from subjects.exceptions.subject_exceptions import (
+from subject.exceptions.subject_exceptions import (
     PermissionDeniedError,
     SubjectNotFoundError,
 )
-from subjects.export_types.request_data_types.create_subject import (
+from subject.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )
 from subject.export_types.request_data_types.edit_subject import EditSubjectRequestType
@@ -55,10 +55,13 @@ class SubjectServices:
         user = User.objects.get(id=uid, is_deleted=False)
         if not user.is_admin:
             raise PermissionDeniedError()
-
-        subject = Subject.objects.get(id=request_data.id, is_deleted=False)
-        if not subject:
+        try:
+            subject = Subject.objects.get(
+                id=request_data.id, is_deleted=False, is_active=True
+            )
+        except Exception:
             raise SubjectNotFoundError()
+
         if str(subject.author.id) != str(uid):
             raise PermissionDeniedError()
 

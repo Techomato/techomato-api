@@ -24,7 +24,7 @@ class EditSubjectView(APIView):
                 )
                 return Response(
                     data={
-                        "message": "User details updated Successfully.",
+                        "message": "Subject details updated Successfully.",
                         "data": subject.model_dump(),
                     },
                     status=status.HTTP_200_OK,
