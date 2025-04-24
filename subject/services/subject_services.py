@@ -11,11 +11,16 @@ from subject.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )
 from subject.export_types.request_data_types.edit_subject import EditSubjectRequestType
+from subject.export_types.subject_types.export_enrollments import ExportEnrollment
 from subject.export_types.subject_types.export_subject import (
     ExportSubject,
     ExportSubjectList,
 )
+from subject.models.enrollment import Enrollment
 from subject.models.subject import Subject
+from subject.serializers.subject_enrollment_serializer import (
+    SubjectEnrollmentSerializer,
+)
 from subject.serializers.subject_serializer import SubjectSerializer
 
 from django.utils import timezone
@@ -115,3 +120,12 @@ class SubjectServices:
             return ExportSubject(**subject.model_to_dict())
         else:
             return None
+
+    @staticmethod
+    def enroll_subject_service(subject_id: dict, uid: str) -> dict:
+        data: dict = {"subject_id": subject_id, "uid": uid}
+        enrollment: Enrollment = SubjectEnrollmentSerializer().create(data)
+        return {
+            "message": "You have enrolled",
+            "data": ExportEnrollment(**enrollment.model_to_dict()).model_dump(),
+        }
