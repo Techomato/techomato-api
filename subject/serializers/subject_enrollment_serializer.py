@@ -49,7 +49,11 @@ class SubjectEnrollmentSerializer(serializers.ModelSerializer):
         # Create enrollment and associate the subject
         # enrollment = Enrollment.objects.create(user=validated_data["user"])
         # enrollment.subjects.add(validated_data["subject"])
-        enrollment = Enrollment.objects.create(user=validated_data["user"])  # Save the instance
-        enrollment.subjects.add(validated_data["subject"])  # Add the subject after saving
+        enrollment = Enrollment.objects.create(
+            user=validated_data["user"]
+        )  # Save the instance
+        enrollment.subjects.add(
+            validated_data["subject"]
+        )  # Add the subject after saving
 
         return enrollment
