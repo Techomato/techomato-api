@@ -35,8 +35,10 @@ class SubjectEnrollmentSerializer(serializers.ModelSerializer):
             raise SubjectNotFoundError()
 
         # Check if already enrolled
-        if Enrollment.objects.filter(user=user, subjects=subject).exists():
-            raise AlreadyEnrolledError()
+        if Enrollment.objects.filter(user=user).exists():
+            enrollment = Enrollment.objects.get(user=user)
+            if subject in enrollment.subjects.filter(id=subject_id):
+                raise AlreadyEnrolledError()
 
         # Attach validated user and subject to the data
         data["user"] = user
@@ -46,14 +48,11 @@ class SubjectEnrollmentSerializer(serializers.ModelSerializer):
     def create(self, data: dict) -> Enrollment:
         validated_data = self.validate(data)
 
-        # Create enrollment and associate the subject
-        # enrollment = Enrollment.objects.create(user=validated_data["user"])
-        # enrollment.subjects.add(validated_data["subject"])
-        enrollment = Enrollment.objects.create(
-            user=validated_data["user"]
-        )  # Save the instance
-        enrollment.subjects.add(
-            validated_data["subject"]
-        )  # Add the subject after saving
-
+        if Enrollment.objects.filter(user=validated_data["user"]).exists():
+            enrollment = Enrollment.objects.get(user=validated_data["user"])
+            enrollment.subjects.add(validated_data["subject"])
+            return enrollment
+        # Create a new Enrollment instance
+        enrollment = Enrollment.objects.create(user=validated_data["user"])
+        enrollment.subjects.add(validated_data["subject"])
         return enrollment
