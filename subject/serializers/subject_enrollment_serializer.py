@@ -16,7 +16,7 @@ class SubjectEnrollmentSerializer(serializers.ModelSerializer):
         model = Subject
         fields = "__all__"
 
-    def validate(self, data: Optional[dict] = None) -> dict:
+    def validate(self, data: Optional[dict] = None) -> Optional[bool]:
         uid: str = data.get("uid")
         subject_id: str = data.get("subject_id")
 
@@ -40,19 +40,25 @@ class SubjectEnrollmentSerializer(serializers.ModelSerializer):
             if subject in enrollment.subjects.filter(id=subject_id):
                 raise AlreadyEnrolledError()
 
-        # Attach validated user and subject to the data
-        data["user"] = user
-        data["subject"] = subject
-        return data
+        return True
 
-    def create(self, data: dict) -> Enrollment:
-        validated_data = self.validate(data)
+    def create(self, data: dict) -> Enrollment | None:
+        if self.validate(data):
+            try:
+                user = User.objects.get(
+                    id=data.get("uid"), is_admin=False, is_deleted=False, is_active=True
+                )
+                subject = Subject.objects.get(
+                    id=data.get("subject_id"), is_active=True, is_deleted=False
+                )
+            except User.DoesNotExist:
+                raise UserNotPermittedError()
+            except Subject.DoesNotExist:
+                raise SubjectNotFoundError()
 
-        if Enrollment.objects.filter(user=validated_data["user"]).exists():
-            enrollment = Enrollment.objects.get(user=validated_data["user"])
-            enrollment.subjects.add(validated_data["subject"])
+            enrollment, created = Enrollment.objects.get_or_create(user=user)
+            enrollment.save()
+            enrollment.subjects.add(subject)
+            enrollment.save()
+
             return enrollment
-        # Create a new Enrollment instance
-        enrollment = Enrollment.objects.create(user=validated_data["user"])
-        enrollment.subjects.add(validated_data["subject"])
-        return enrollment

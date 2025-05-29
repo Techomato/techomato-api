@@ -14,20 +14,24 @@ from subject.export_types.subject_types.export_subject import (
 
 class ExportEnrollment(BaseModel):
     id: Optional[UUID]
-    student: ExportUser
-    course: ExportSubjectList
+    user: Optional[ExportUser] = None
+    subjects: Optional[ExportSubjectList] = None
     enrolled_at: datetime
 
     def __init__(self, with_id: bool = True, **kwargs):
         if not with_id:
             kwargs["id"] = None
-        if isinstance(kwargs.get("user")):
-            kwargs["user"] = ExportUser(**kwargs.get("user"))
-        if "subject" in kwargs:
-            kwargs["course"] = ExportSubjectList(
+        if kwargs.get("user"):
+            kwargs["user"] = ExportUser(**kwargs.get("user").model_to_dict())
+        if (
+            "subjects" in kwargs
+            and kwargs["subjects"].all()
+            and len(kwargs["subjects"].all())
+        ):
+            kwargs["subjects"] = ExportSubjectList(
                 subject_list=[
                     ExportSubject(**subject.model_to_dict())
-                    for subject in kwargs["subject"].all()
+                    for subject in kwargs["subjects"].all()
                 ]
             )
 

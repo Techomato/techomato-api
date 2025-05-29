@@ -11,6 +11,9 @@ from subject.export_types.request_data_types.create_subject import (
     CreateSubjectRequestType,
 )
 from subject.export_types.request_data_types.edit_subject import EditSubjectRequestType
+from subject.export_types.request_data_types.subject_enrollment import (
+    EnrollSubjectRequestType,
+)
 from subject.export_types.subject_types.export_enrollments import ExportEnrollment
 from subject.export_types.subject_types.export_subject import (
     ExportSubject,
@@ -122,8 +125,10 @@ class SubjectServices:
             return None
 
     @staticmethod
-    def enroll_subject_service(subject_id: dict, uid: str) -> dict:
-        data: dict = {"subject_id": subject_id, "uid": uid}
+    def enroll_subject_service(
+        request_data: EnrollSubjectRequestType, uid: str
+    ) -> dict:
+        data: dict = {"subject_id": request_data.subject_id, "uid": uid}
         enrollment: Enrollment = SubjectEnrollmentSerializer().create(data)
         return {
             "message": "You have enrolled",
