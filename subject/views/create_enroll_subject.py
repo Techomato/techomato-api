@@ -21,7 +21,6 @@ class EnrollSubjectView(APIView):
             user_id = decode_jwt_token(request=request)
             if validate_user_uid(uid=user_id).is_validated:
                 enrollment = SubjectServices().enroll_subject_service(
-                    # subject_id=request.data.get("subject_id"),
                     request_data=EnrollSubjectRequestType(**request.data),
                     uid=user_id,
                 )
