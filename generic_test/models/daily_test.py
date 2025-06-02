@@ -6,7 +6,7 @@ from subject.models.subject import Subject
 
 class DailyTest(GenericTest):
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
-    full_marks = models.PositiveIntegerField()
+    full_marks = models.PositiveIntegerField(default=100)
 
     class Meta:
         verbose_name = "Daily Test"
