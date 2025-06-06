@@ -39,4 +39,4 @@ class ExportEnrollment(BaseModel):
 
 
 class ExportEnrollmentSubjectList(BaseModel):
-    subject_list: typing.List[ExportEnrollment]
+    enrolled_list: typing.List[ExportEnrollment]

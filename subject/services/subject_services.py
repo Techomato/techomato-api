@@ -14,7 +14,10 @@ from subject.export_types.request_data_types.edit_subject import EditSubjectRequ
 from subject.export_types.request_data_types.subject_enrollment import (
     EnrollSubjectRequestType,
 )
-from subject.export_types.subject_types.export_enrollments import ExportEnrollment
+from subject.export_types.subject_types.export_enrollments import (
+    ExportEnrollment,
+    ExportEnrollmentSubjectList,
+)
 from subject.export_types.subject_types.export_subject import (
     ExportSubject,
     ExportSubjectList,
@@ -55,6 +58,27 @@ class SubjectServices:
                 ]
             )
             return all_subject
+        else:
+            return None
+
+    @staticmethod
+    def get_all_enrolled_subjects_service(
+        user_id: str,
+    ) -> Optional[ExportEnrollmentSubjectList]:
+        try:
+            enrolled_data = Enrollment.objects.filter(user_id=user_id)
+        except Exception:
+            raise DatabaseError()
+        if enrolled_data:
+            all_enrolled_subject = ExportEnrollmentSubjectList(
+                enrolled_list=[
+                    ExportEnrollment(
+                        with_id=False, **enrolled_subject_data.model_to_dict()
+                    )
+                    for enrolled_subject_data in enrolled_data
+                ]
+            )
+            return all_enrolled_subject
         else:
             return None
 
