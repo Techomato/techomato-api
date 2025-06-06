@@ -21,6 +21,7 @@ from auth_api.auth_exceptions.user_exceptions import (
 from subject.exceptions.subject_exceptions import (
     PermissionDeniedError,
     SubjectNotFoundError,
+    AlreadyEnrolledError,
 )
 
 
@@ -81,6 +82,10 @@ class ExceptionHandler:
             },
             PermissionDeniedError: {
                 "message": "PermissionDeniedError",
+                "status": status.HTTP_403_FORBIDDEN,
+            },
+            AlreadyEnrolledError: {
+                "message": "AlreadyEnrolledError",
                 "status": status.HTTP_403_FORBIDDEN,
             },
             ValueError: {

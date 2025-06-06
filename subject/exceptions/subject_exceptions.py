@@ -20,3 +20,12 @@ class PermissionDeniedError(AUTHBaseException):
         else:
             super().__init__(msg)
         logging.error(self.msg)
+
+
+class AlreadyEnrolledError(AUTHBaseException):
+    def __init__(self, msg: Optional[str] = None):
+        if not msg:
+            self.msg = "User is already enrolled in this subject."
+        else:
+            super().__init__(msg)
+        logging.error(self.msg)

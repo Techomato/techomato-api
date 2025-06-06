@@ -6,7 +6,6 @@ from uuid import UUID
 from pydantic import BaseModel
 
 from auth_api.export_types.user_types.export_user import ExportUser
-from subject.models.review import Review
 
 
 class ExportReview(BaseModel):
@@ -18,10 +17,10 @@ class ExportReview(BaseModel):
     updated_at: datetime
 
     def __init__(self, **kwargs):
-        if kwargs["review"] and isinstance(kwargs["review"], Review):
-            kwargs["review"] = ExportReview(**kwargs["review"].model_to_dict())
+        if kwargs.get("user"):
+            kwargs["user"] = ExportUser(**kwargs["user"].model_to_dict())
         super().__init__(**kwargs)
 
 
 class ExportReviewList(BaseModel):
-    group_list: typing.List[ExportReview]
+    review_list: typing.List[ExportReview]

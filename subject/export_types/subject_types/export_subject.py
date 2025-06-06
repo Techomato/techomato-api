@@ -1,16 +1,13 @@
-import typing
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 from uuid import UUID
 
 from _decimal import Decimal
 from pydantic import BaseModel
 
 from auth_api.export_types.user_types.export_user import ExportUser
-from auth_api.models.user_models.user import User
 from subject.export_types.subject_types.export_category import ExportCategory
 from subject.export_types.subject_types.export_review import ExportReview
-from subject.models.category import Category
 
 
 class ExportSubject(BaseModel):
@@ -23,7 +20,7 @@ class ExportSubject(BaseModel):
     courseShortDescription: str
     courseFullDescription: Optional[str]
     image: Optional[str]
-    review: Optional[ExportReview] = None
+    review: Optional[List[ExportReview]] = None
     rating: Optional[int]
     created_at: datetime
     updated_at: datetime
@@ -33,15 +30,20 @@ class ExportSubject(BaseModel):
     def __init__(self, with_id: bool = True, **kwargs):
         if not with_id:
             kwargs["id"] = None
-        if isinstance(kwargs["author"], User):
+        if kwargs.get("author"):
             user_dict = kwargs["author"].model_to_dict()
             kwargs["author"] = ExportUser(**user_dict)
-        if isinstance(kwargs["courseCategory"], Category):
+        if kwargs.get("courseCategory"):
             kwargs["courseCategory"] = ExportCategory(
                 **kwargs["courseCategory"].model_to_dict()
             )
+        if kwargs.get("review"):
+            kwargs["review"] = [
+                ExportReview(**review.model_to_dict())
+                for review in kwargs["review"].all()
+            ]
         super().__init__(**kwargs)
 
 
 class ExportSubjectList(BaseModel):
-    subject_list: typing.List[ExportSubject]
+    subject_list: List[ExportSubject]

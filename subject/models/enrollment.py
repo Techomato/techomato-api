@@ -7,7 +7,7 @@ from subject.models.subject import Subject
 
 class Enrollment(GenericBaseModel):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    subjects = models.ManyToManyField(Subject)
+    subjects = models.ManyToManyField(Subject, blank=True)
     enrolled_at = models.DateTimeField(auto_now_add=True)
 
 
